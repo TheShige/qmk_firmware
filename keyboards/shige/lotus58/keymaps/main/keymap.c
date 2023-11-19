@@ -21,7 +21,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [1] = LAYOUT(
     KC_ESC, 	    KC_1,	        KC_2,	        KC_3,	        KC_4,	        KC_5,	        ____,	    ____,	KC_6,	        KC_7,	        KC_8,		    KC_9,		    KC_0,		        KC_MINS,
     KC_TAB, 	    KC_Q,	        KC_W,           KC_E,           KC_R,           KC_T,                               KC_Y, 	        KC_U,           KC_I,   	    KC_O,   	    KC_P,   	        KC_EQL,
-	LT(4, KC_CAPS), LGUI_T(KC_A), 	LALT_T(KC_S),   LCTL_T(KC_D),   LSFT_T(KC_F),     KC_G,                      	    KC_H, 	        RSFT_T(KC_J),   RCTL_T(KC_K),   LALT_T(KC_L),	RGUI_T(KC_SCLN),    KC_QUOT,
+    LT(4, KC_CAPS), LGUI_T(KC_A), 	LALT_T(KC_S),   LCTL_T(KC_D),   LSFT_T(KC_F),     KC_G,                      	    KC_H, 	        RSFT_T(KC_J),   RCTL_T(KC_K),   LALT_T(KC_L),	RGUI_T(KC_SCLN),    KC_QUOT,
 	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_V,           KC_B,           TG(1),		TG(6),  KC_N, 	        KC_M,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
 						            KC_LGUI,        MO(3),          KC_LCTL,        LT(3, KC_SPC),    	               LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
 	),
@@ -38,7 +38,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
 	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
 	____, ____, ____, ____, ____, ____,                    KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, KC_HOME, KC_PGUP, KC_PGDN, KC_END, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, KC_HOME, KC_PGDN, KC_PGUP, KC_END, ____, ____,
 					  ____, ____, ____, ____,      	 ____, ____, ____, ____
     ),
 
@@ -87,20 +87,21 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [7] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
 };
 
-// Combos setup
+// Key overrides setup
 
-const uint16_t PROGMEM combo1[] = {LSFT(KC_6), KC_SCLN, COMBO_END};
-const uint16_t PROGMEM combo2[] = {KC_EQL, KC_SCLN, COMBO_END};
-const uint16_t PROGMEM combo3[] = {LSFT(KC_MINS), KC_SCLN, COMBO_END};
-const uint16_t PROGMEM combo4[] = {LSFT(KC_4), KC_SCLN, COMBO_END};
-const uint16_t PROGMEM combo5[] = {LSFT(KC_8), KC_SCLN, COMBO_END};
+const key_override_t key1 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_6), KC_LBRC, 4);
+const key_override_t key2 = ko_make_with_layers(MOD_MASK_SHIFT, KC_EQL, LSFT(KC_7), 4);
+const key_override_t key3 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_MINS), LSFT(KC_EQL), 4);
+const key_override_t key4 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_4), KC_RBRC, 4);
+const key_override_t key5 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_8), KC_BSLS, 4);
 
-combo_t key_combos[] = {
-    COMBO(combo1, KC_LBRC),
-    COMBO(combo2, LSFT(KC_7)),
-    COMBO(combo3, LSFT(KC_EQL)),
-    COMBO(combo4, KC_RBRC),
-    COMBO(combo5, KC_BSLS),
+const key_override_t **key_overrides = (const key_override_t *[]){
+    &key1,
+    &key2,
+    &key3,
+    &key4,
+    &key5,
+    NULL
 };
 
 // Achordion setup
