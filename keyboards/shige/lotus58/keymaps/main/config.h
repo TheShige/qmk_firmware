@@ -25,7 +25,7 @@
 #define DYNAMIC_KEYMAP_LAYER_COUNT 8
 
 // Homerow mod
-#define TAPPING_TERM 200
+#define TAPPING_TERM 180
 
 // Rgblight
 #define RGBLIGHT_DEFAULT_VAL 87

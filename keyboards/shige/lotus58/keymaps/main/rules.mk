@@ -6,5 +6,3 @@ KEY_OVERRIDE_ENABLE = yes
 
 # Achordion mod
 SRC += features/achordion.c
-
-CONSOLE_ENABLE = yes
