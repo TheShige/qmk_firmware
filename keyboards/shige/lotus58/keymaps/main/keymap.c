@@ -3,11 +3,8 @@
 
 #include QMK_KEYBOARD_H
 
-#include <stdint.h>
 #include "features/achordion.h"
 #include "transactions.h"
-
-#include "print.h"
 
 #define ____ KC_TRNS
 
@@ -116,6 +113,21 @@ uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
   }
 
   return 800;
+}
+
+bool achordion_chord(uint16_t tap_hold_keycode,
+                     keyrecord_t* tap_hold_record,
+                     uint16_t other_keycode,
+                     keyrecord_t* other_record) {
+    switch (tap_hold_keycode) {
+        case LALT_T(KC_R):
+        case LALT_T(KC_S):
+            if (other_keycode == KC_TAB)
+                return true;
+            break;
+    }
+
+  return achordion_opposite_hands(tap_hold_record, other_record);
 }
 
 // OLED setup
@@ -277,32 +289,6 @@ static void print_status_narrow(void) {
             oled_write_P(PSTR("Undef"), false);
     }
 
-    /*
-    oled_write_P(PSTR("J: "), false);
-
-    if (luna_status.isJumping) {
-        oled_write_P(PSTR("Y "), false);
-    } else {
-        oled_write_P(PSTR("N "), false);
-    }
-
-    oled_write_P(PSTR("SJ: "), false);
-
-    if (luna_status.showedJump) {
-        oled_write_P(PSTR("Y"), false);
-    } else {
-        oled_write_P(PSTR("N"), false);
-    }
-
-    oled_write_P(PSTR("S: "), false);
-
-    if (luna_status.isSneaking) {
-        oled_write_P(PSTR("Y "), false);
-    } else {
-        oled_write_P(PSTR("N "), false);
-    }
-    */
-
     /* wpm counter */
     uint8_t n = current_wpm;
     char    wpm_str[4];
@@ -356,8 +342,6 @@ void user_sync_a_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t o
 }
 
 void keyboard_post_init_user(void) {
-    debug_enable=true;
-
     luna_status.isJumping = false;
     luna_status.showedJump = true;
     luna_status.isSneaking = false;
@@ -370,6 +354,10 @@ void housekeeping_task_user(void) {
         if (!isSynced) {
             if (transaction_rpc_send(USER_SYNC_A, sizeof(luna_status), &luna_status)) {
                 isSynced = true;
+
+                luna_status.isJumping = false;
+                luna_status.showedJump = true;
+                luna_status.isSneaking = false;
             }
         }
     } else {
@@ -378,7 +366,6 @@ void housekeeping_task_user(void) {
 }
 
 // Input / matrix processing
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_LCTL:
