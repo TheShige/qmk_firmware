@@ -13,17 +13,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(
     KC_ESC, 	    KC_1,	        KC_2,	        KC_3,	        KC_4,	        KC_5,	        KC_MPLY,	KC_NO,	KC_6,	        KC_7,	        KC_8,		    KC_9,		    KC_0,		        KC_MINS,
     KC_TAB, 	    KC_Q,	        KC_W,           KC_F,           KC_P,           KC_B,                               KC_J, 	        KC_L,           KC_U,   	    KC_Y,   	    KC_SCLN,   	        KC_EQL,
-	LT(4, KC_CAPS), LGUI_T(KC_A), 	LALT_T(KC_R),   LCTL_T(KC_S),   LSFT_T(KC_T),     KC_G,                      	    KC_M, 	        RSFT_T(KC_N),   RCTL_T(KC_E),   LALT_T(KC_I),	RGUI_T(KC_O),       KC_QUOT,
+	KC_CAPS,        LGUI_T(KC_A), 	LALT_T(KC_R),   LCTL_T(KC_S),   LSFT_T(KC_T),   KC_G,                      	    KC_M, 	        RSFT_T(KC_N),   RCTL_T(KC_E),   LALT_T(KC_I),	RGUI_T(KC_O),       KC_QUOT,
 	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_D,           KC_V,           TG(1),		TG(6),  KC_K, 	        KC_H,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
-						            LT(5, KC_LGUI),        MO(3),          KC_LCTL,        LT(3, KC_SPC),    	                LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
+						            LT(5, KC_LGUI), MO(3),          LT(4, KC_LCTL), LT(3, KC_SPC),    	                LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
 	),
 
     [1] = LAYOUT(
     KC_ESC, 	    KC_1,	        KC_2,	        KC_3,	        KC_4,	        KC_5,	        ____,	    ____,	KC_6,	        KC_7,	        KC_8,		    KC_9,		    KC_0,		        KC_MINS,
     KC_TAB, 	    KC_Q,	        KC_W,           KC_E,           KC_R,           KC_T,                               KC_Y, 	        KC_U,           KC_I,   	    KC_O,   	    KC_P,   	        KC_EQL,
-    LT(4, KC_CAPS), LGUI_T(KC_A), 	LALT_T(KC_S),   LCTL_T(KC_D),   LSFT_T(KC_F),     KC_G,                      	    KC_H, 	        RSFT_T(KC_J),   RCTL_T(KC_K),   LALT_T(KC_L),	RGUI_T(KC_SCLN),    KC_QUOT,
+    KC_CAPS,        LGUI_T(KC_A), 	LALT_T(KC_S),   LCTL_T(KC_D),   LSFT_T(KC_F),     KC_G,                      	    KC_H, 	        RSFT_T(KC_J),   RCTL_T(KC_K),   LALT_T(KC_L),	RGUI_T(KC_SCLN),    KC_QUOT,
 	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_V,           KC_B,           TG(1),		TG(6),  KC_N, 	        KC_M,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
-						            LT(5, KC_LGUI),        MO(3),          KC_LCTL,        LT(3, KC_SPC),    	               LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
+						            LT(5, KC_LGUI), MO(3),          LT(4, KC_LCTL), LT(3, KC_SPC),    	                LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
 	),
 
     [2] = LAYOUT(
@@ -44,10 +44,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [4] = LAYOUT(
     ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    LSFT(KC_5), KC_7, KC_8, KC_9, LSFT(KC_SCLN), ____,
-	____, ____, ____, ____, ____, ____,                    LSFT(KC_EQL), KC_4, KC_5, KC_6, KC_MINS, KC_DOT,
-	____, ____, ____, ____, ____, ____, ____,        ____, LSFT(KC_8), KC_1, KC_2, KC_3, KC_SLSH, KC_COMMA,
-					  ____, ____, ____, ____,      	 KC_0, ____, KC_EQL, ____
+	____, ____, ____, ____, ____, ____,                    LSFT(KC_8), KC_7, KC_8, KC_9, LSFT(KC_SCLN), ____,
+	____, ____, ____, ____, ____, ____,                    LSFT(KC_EQL), KC_4, KC_5, KC_6, KC_MINS, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, LSFT(KC_8), KC_1, KC_2, KC_3, KC_SLSH, ____,
+					  ____, ____, ____, ____,      	 KC_DOT, KC_0, KC_COMMA, KC_EQL
     ),
 
     [5] = LAYOUT(
@@ -160,12 +160,12 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 // Achordion setup
 
 uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  switch (tap_hold_keycode) {
-    case LT(2, KC_ENT):
-      return 0;
-  }
+    switch (tap_hold_keycode) {
+        case LT(2, KC_ENT):
+            return 0;
+    }
 
-  return 800;
+    return 800;
 }
 
 bool achordion_chord(uint16_t tap_hold_keycode,
