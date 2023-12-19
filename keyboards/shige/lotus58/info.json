@@ -67,8 +67,8 @@
         }
     },
     "usb": {
-        "vid": "0xFEED",
-        "pid": "0x23B0",
+        "vid": "0x6776",
+        "pid": "0x2192",
         "device_version": "1.2.3",
         "force_nkro": true,
         "polling_interval": 1
