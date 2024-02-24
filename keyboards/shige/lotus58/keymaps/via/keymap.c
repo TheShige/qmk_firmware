@@ -15,7 +15,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB, 	    KC_Q,	        KC_W,           KC_F,           KC_P,           KC_B,                               KC_J, 	        KC_L,           KC_U,   	    KC_Y,   	    KC_SCLN,   	        KC_EQL,
 	KC_CAPS,        LGUI_T(KC_A), 	LALT_T(KC_R),   LCTL_T(KC_S),   LSFT_T(KC_T),   KC_G,                      	    KC_M, 	        RSFT_T(KC_N),   RCTL_T(KC_E),   LALT_T(KC_I),	RGUI_T(KC_O),       KC_QUOT,
 	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_D,           KC_V,           TG(1),		TG(6),  KC_K, 	        KC_H,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
-						            LT(5, KC_LGUI), MO(3),          LT(4, KC_LCTL), LT(3, KC_SPC),    	                LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
+						            LT(5, KC_LGUI), LT(4, KC_ESC),  LT(3,KC_SPC),   KC_TAB,    	                        KC_ENT, 	    LT(2,KC_BSPC),  KC_DEL,         KC_RALT
 	),
 
     [1] = LAYOUT(
@@ -23,11 +23,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB, 	    KC_Q,	        KC_W,           KC_E,           KC_R,           KC_T,                               KC_Y, 	        KC_U,           KC_I,   	    KC_O,   	    KC_P,   	        KC_EQL,
     KC_CAPS,        LGUI_T(KC_A), 	LALT_T(KC_S),   LCTL_T(KC_D),   LSFT_T(KC_F),     KC_G,                      	    KC_H, 	        RSFT_T(KC_J),   RCTL_T(KC_K),   LALT_T(KC_L),	RGUI_T(KC_SCLN),    KC_QUOT,
 	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_V,           KC_B,           TG(1),		TG(6),  KC_N, 	        KC_M,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
-						            LT(5, KC_LGUI), MO(3),          LT(4, KC_LCTL), LT(3, KC_SPC),    	                LT(2, KC_ENT), 	KC_BSPC,        KC_DEL,         KC_RALT
+						            LT(5, KC_LGUI), LT(4, KC_ESC),  LT(3,KC_SPC),   KC_TAB,    	                        KC_ENT, 	    LT(2,KC_BSPC),  KC_DEL,         KC_RALT
 	),
 
     [2] = LAYOUT(
-    LSFT(KC_2),     KC_GRAVE,       LSFT(KC_9),     LSFT(KC_0),     KC_SCLN,        KC_COMMA,       ____,       ____,   ____,   ____,   ____,   ____,   ____,   ____,
+    ____,     KC_GRAVE,       LSFT(KC_9),     LSFT(KC_0),     KC_SCLN,        KC_COMMA,       ____,       ____,   ____,   ____,   ____,   ____,   ____,   ____,
 	LSFT(KC_1),     LSFT(KC_LBRC),  KC_QUOT,        LSFT(KC_QUOT),  LSFT(KC_RBRC),  LSFT(KC_SLSH),                      ____,   ____,   ____,   ____,   ____,   ____,
 	LSFT(KC_3),     LSFT(KC_6),     KC_EQL,         LSFT(KC_MINS),  LSFT(KC_4),     LSFT(KC_8),                         ____,   ____,   ____,   ____,   ____,   ____,
 	LSFT(KC_GRV),   LSFT(KC_COMMA), LSFT(KC_BSLS),  KC_MINS,        LSFT(KC_DOT),   KC_SLSH,        ____,    ____,   ____,   ____,   ____,   ____,   ____,   ____,
@@ -59,11 +59,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [6] = LAYOUT(
-    KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, ____,        ____, KC_6, KC_7, KC_8, KC_9, KC_0, ____,
-	KC_DEL, KC_TAB, KC_Q, KC_W, KC_E, KC_R,                    KC_Y, KC_U, KC_I, KC_O, KC_P, ____,
-	KC_T, KC_LSFT, KC_A, KC_S, KC_D, KC_F,                    KC_H, KC_J, KC_K, KC_L, KC_SCLN, ____,
-	KC_B, KC_LCTL, KC_Z, KC_X, KC_C, KC_V, KC_G,        TG(6), KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, ____,
-					  KC_Z, KC_LALT, KC_LCTL, KC_SPC,      	KC_ENT, ____, ____, ____
+    KC_ESC, KC_1,    KC_2, KC_3, KC_4, KC_5,       ____,       ____,   KC_6, KC_7, KC_8, KC_9, KC_0, ____,
+	KC_DEL, KC_TAB,  KC_Q, KC_W, KC_E, KC_R,                         KC_Y, KC_U, KC_I, KC_O, KC_P, ____,
+	KC_T,   KC_LSFT, KC_A, KC_S, KC_D, KC_F,                          KC_H, KC_J, KC_K, KC_L, KC_SCLN, ____,
+	KC_B,   KC_LCTL, KC_Z, KC_X, KC_C, KC_V,      KC_G,        TG(6), KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, ____,
+				     KC_B, KC_LALT, KC_SPC, KC_LCTL,      	    KC_ENT, ____, ____, ____
     ),
 
 
@@ -141,12 +141,12 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 
 // Key overrides setup
-
 const key_override_t key1 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_6), KC_LBRC, 4);
 const key_override_t key2 = ko_make_with_layers(MOD_MASK_SHIFT, KC_EQL, LSFT(KC_7), 4);
 const key_override_t key3 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_MINS), LSFT(KC_EQL), 4);
 const key_override_t key4 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_4), KC_RBRC, 4);
 const key_override_t key5 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_8), KC_BSLS, 4);
+const key_override_t key6 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_3), LSFT(KC_2), 4);
 
 const key_override_t **key_overrides = (const key_override_t *[]){
     &key1,
@@ -154,6 +154,7 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &key3,
     &key4,
     &key5,
+    &key6,
     NULL
 };
 
@@ -161,7 +162,10 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 
 uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
     switch (tap_hold_keycode) {
-        case LT(2, KC_ENT):
+        case LT(2, KC_BSPC):
+        case LT(3, KC_SPC):
+        case LT(4, KC_ESC):
+        case LT(5, KC_LGUI):
             return 0;
     }
 
