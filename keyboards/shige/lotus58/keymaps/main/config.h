@@ -25,7 +25,7 @@
 #define DYNAMIC_KEYMAP_LAYER_COUNT 8
 
 // Homerow mod
-#define TAPPING_TERM 190
+#define TAPPING_TERM 180
 
 // RGB Matrix effects
 #define RGB_MATRIX_KEYPRESSES
