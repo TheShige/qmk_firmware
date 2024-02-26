@@ -5,10 +5,8 @@
     "bootloader": "rp2040",
     "bootloader_instructions": "Short marked pads on PCB, or hold top-outer key when plugging in each hand.",
     "build": {
-        "debounce_type": "sym_eager_pk",
         "lto": true
     },
-    "debounce": 5,
     "diode_direction": "COL2ROW",
     "encoder": {
         "rotary": [
