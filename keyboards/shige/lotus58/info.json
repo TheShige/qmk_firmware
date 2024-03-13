@@ -36,7 +36,7 @@
         "led_count": 58,
         "split_count": [ 29, 29 ],
         "sleep": true,
-        "max_brightness": 150
+        "max_brightness": 120
     },
     "ws2812": {
         "pin": "D3",
