@@ -2,7 +2,8 @@
     "manufacturer": "TheShige",
     "keyboard_name": "Lotus58",
     "maintainer": "TheShige",
-    "bootloader": "rp2040",
+    "development_board": "promicro_rp2040",
+    "pin_compatible": "promicro",
     "bootloader_instructions": "Short marked pads on PCB, or hold top-outer key when plugging in each hand.",
     "build": {
         "lto": true
@@ -30,7 +31,6 @@
         "cols": ["B1", "B2", "B3", "B6", "F7", "F6"],
         "rows": ["D4", "C6", "D7", "E6", "B4"]
     },
-    "processor": "RP2040",
     "rgb_matrix": {
         "driver": "ws2812",
         "led_count": 58,
