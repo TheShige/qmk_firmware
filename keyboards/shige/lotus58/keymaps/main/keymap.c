@@ -394,64 +394,71 @@ static void print_status_narrow(void) {
     switch (currentLayer) {
         case 0:
             oled_write_P(PSTR("-Clmk\n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 1:
             oled_write_P(PSTR("-Qwer\n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 2:
             oled_write_P(PSTR("-Symb\n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 3:
             oled_write_P(PSTR("-Nav \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 4:
             oled_write_P(PSTR("-Num \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 5:
             oled_write_P(PSTR("-RGB \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 6:
             oled_write_P(PSTR("-Game\n"), false);
-            oled_advance_page(true);
             oled_write_P(PSTR("*****\n"), false);
             break;
         case 7:
             oled_write_P(PSTR("-Game\n"), false);
-            oled_advance_page(true);
             oled_write_P(PSTR("*Base\n"), false);
             break;
         case 8:
             oled_write_P(PSTR("-Game\n"), false);
-            oled_advance_page(true);
             oled_write_P(PSTR("*VALO\n"), false);
             break;
         case 9:
             oled_write_P(PSTR("-Game\n"), false);
-            oled_advance_page(true);
             oled_write_P(PSTR("*EFT \n"), false);
             break;
         case 10:
             oled_write_P(PSTR("-Game\n"), false);
-            oled_advance_page(true);
             oled_write_P(PSTR("*Cust \n"), false);
             break;
         case 11:
             oled_write_P(PSTR("-11   \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 12:
             oled_write_P(PSTR("-12   \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 13:
             oled_write_P(PSTR("-13  \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 14:
             oled_write_P(PSTR("-14  \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         case 15:
             oled_write_P(PSTR("-15  \n"), false);
+            oled_write_P(PSTR("     \n"), false);
             break;
         default:
             oled_write_P(PSTR("Undef"), false);
+            oled_write_P(PSTR("     \n"), false);
     }
 
     /* wpm counter */
