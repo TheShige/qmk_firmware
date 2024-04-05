@@ -2,11 +2,40 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
-
+#include <stdlib.h>
 #include "features/achordion.h"
 #include "transactions.h"
 
 #define ____ KC_TRNS
+
+// OLED setup
+#define MIN_WALK_SPEED 10
+#define MIN_RUN_SPEED 50
+
+#define ANIM_FRAME_DURATION 200 // how long each frame lasts in ms
+#define ANIM_SIZE 96            // number of bytes in array. If you change sprites, minimize for adequate firmware size. max is 1024
+//
+enum my_keycodes { SWITCH_COLEMAK = SAFE_RANGE };
+
+typedef struct _sync_luna_status_t {
+    bool isJumping;
+    bool showedJump;
+    bool isSneaking;
+} sync_luna_status_t;
+
+bool isSynced = true; // are the two halves are synced
+
+uint32_t anim_timer    = 0;
+uint8_t current_frame = 0;
+
+/* status variables */
+int current_wpm = 0;
+led_t led_usb_state;
+sync_luna_status_t luna_status;
+
+int lastLayer = 0; // last layer before "SWITCH_COLEMAK" is pressed
+int currentLayer = 0; // current layer
+bool is_oled_enabled = true;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -66,7 +95,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 				     KC_B, KC_LALT, KC_SPC, KC_LCTL,      	    KC_ENT, ____, ____, ____
     ),
 
-
     [7] = LAYOUT(
     ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
 	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
@@ -74,6 +102,89 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
 					  ____, ____, ____, ____,      	 ____, ____, ____, ____
     ),
+
+    [8] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [9] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [10] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [11] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [12] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [13] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [14] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+
+    [15] = LAYOUT(
+    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
+	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
+					  ____, ____, ____, ____,      	 ____, ____, ____, ____
+    ),
+};
+
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
+    [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [1] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [2] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [3] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [4] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [5] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [6] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [7] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [8] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [9] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [10] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [11] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [12] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [13] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [14] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [15] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
 };
 
 // RGB matrix
@@ -129,17 +240,6 @@ led_config_t g_led_config = {
     }
 };
 
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
-    [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [1] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [2] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [3] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [4] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [5] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [6] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [7] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-};
-
 // Key overrides setup
 const key_override_t key1 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_6), KC_LBRC, 4);
 const key_override_t key2 = ko_make_with_layers(MOD_MASK_SHIFT, KC_EQL, LSFT(KC_7), 4);
@@ -159,7 +259,6 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 };
 
 // Achordion setup
-
 uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
     switch (tap_hold_keycode) {
         case LT(2, KC_BSPC):
@@ -173,43 +272,18 @@ uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
 }
 
 bool achordion_chord(uint16_t tap_hold_keycode,
-                     keyrecord_t* tap_hold_record,
+                     keyrecord_t *tap_hold_record,
                      uint16_t other_keycode,
-                     keyrecord_t* other_record) {
+                     keyrecord_t *other_record) {
     switch (tap_hold_keycode) {
         case LALT_T(KC_R):
         case LALT_T(KC_S):
-            if (other_keycode == KC_TAB)
-                return true;
+            if (other_keycode == KC_TAB) return true;
             break;
     }
 
-  return achordion_opposite_hands(tap_hold_record, other_record);
+    return achordion_opposite_hands(tap_hold_record, other_record);
 }
-
-// OLED setup
-
-#    define MIN_WALK_SPEED      10
-#    define MIN_RUN_SPEED       50
-
-#    define ANIM_FRAME_DURATION 200  // how long each frame lasts in ms
-#    define ANIM_SIZE           96   // number of bytes in array. If you change sprites, minimize for adequate firmware size. max is 1024
-
-typedef struct _sync_luna_status_t {
-    bool isJumping;
-    bool showedJump;
-    bool isSneaking;
-} sync_luna_status_t;
-
-bool isSynced = true;
-
-uint32_t anim_timer = 0;
-uint8_t current_frame = 0;
-
-/* status variables */
-int   current_wpm = 0;
-led_t led_usb_state;
-sync_luna_status_t luna_status;
 
 static void render_luna(int LUNA_X, int LUNA_Y) {
     /* Sit */
@@ -309,7 +383,7 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
 }
 
 static void print_status_narrow(void) {
-	// Create OLED content
+    // Create OLED content
     oled_advance_page(true);
     oled_write_P(PSTR("Shige"), false);
     oled_advance_page(true);
@@ -317,7 +391,7 @@ static void print_status_narrow(void) {
 
     // Print current layer
     oled_write_P(PSTR("Layer"), false);
-    switch (get_highest_layer(layer_state)) {
+    switch (currentLayer) {
         case 0:
             oled_write_P(PSTR("-Clmk\n"), false);
             break;
@@ -338,9 +412,43 @@ static void print_status_narrow(void) {
             break;
         case 6:
             oled_write_P(PSTR("-Game\n"), false);
+            oled_advance_page(true);
+            oled_write_P(PSTR("*****\n"), false);
             break;
         case 7:
-            oled_write_P(PSTR("-7   \n"), false);
+            oled_write_P(PSTR("-Game\n"), false);
+            oled_advance_page(true);
+            oled_write_P(PSTR("*Base\n"), false);
+            break;
+        case 8:
+            oled_write_P(PSTR("-Game\n"), false);
+            oled_advance_page(true);
+            oled_write_P(PSTR("*VALO\n"), false);
+            break;
+        case 9:
+            oled_write_P(PSTR("-Game\n"), false);
+            oled_advance_page(true);
+            oled_write_P(PSTR("*EFT \n"), false);
+            break;
+        case 10:
+            oled_write_P(PSTR("-Game\n"), false);
+            oled_advance_page(true);
+            oled_write_P(PSTR("*Cust \n"), false);
+            break;
+        case 11:
+            oled_write_P(PSTR("-11   \n"), false);
+            break;
+        case 12:
+            oled_write_P(PSTR("-12   \n"), false);
+            break;
+        case 13:
+            oled_write_P(PSTR("-13  \n"), false);
+            break;
+        case 14:
+            oled_write_P(PSTR("-14  \n"), false);
+            break;
+        case 15:
+            oled_write_P(PSTR("-15  \n"), false);
             break;
         default:
             oled_write_P(PSTR("Undef"), false);
@@ -361,37 +469,35 @@ static void print_status_narrow(void) {
     oled_write(wpm_str, false);
 
     oled_set_cursor(0, 11);
-    oled_write(" wpm", false);
+    oled_write(" wpm ", false);
 
     render_luna(0, 13);
 }
-
-bool is_oled_enabled = true;
 
 oled_rotation_t oled_init_kb(oled_rotation_t rotation) {
     return OLED_ROTATION_270;
 }
 
 bool oled_task_user(void) {
-    current_wpm   = get_current_wpm();
+    current_wpm = get_current_wpm();
     led_usb_state = host_keyboard_led_state();
 
     if (!is_keyboard_master()) {
         if (!is_oled_enabled) {
             oled_off();
             return false;
-        } else  {
+        } else {
             oled_on();
         }
 
         print_status_narrow();
     }
 
-	return false;
+    return false;
 }
 
-void user_sync_a_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
-    const sync_luna_status_t *m2s = (const sync_luna_status_t*)in_data;
+void user_sync_a_slave_handler(uint8_t in_buflen, const void *in_data, uint8_t out_buflen, void *out_data) {
+    const sync_luna_status_t *m2s = (const sync_luna_status_t *)in_data;
 
     luna_status.isJumping = m2s->isJumping;
     luna_status.showedJump = m2s->showedJump;
@@ -407,6 +513,7 @@ void keyboard_post_init_user(void) {
 }
 
 void housekeeping_task_user(void) {
+    currentLayer = get_highest_layer(layer_state);
     if (is_keyboard_master()) {
         if (!isSynced) {
             if (transaction_rpc_send(USER_SYNC_A, sizeof(luna_status), &luna_status)) {
@@ -444,6 +551,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
                 luna_status.isJumping = false;
                 isSynced = false;
+            }
+            break;
+        case SWITCH_COLEMAK:
+            if (record->event.pressed) {
+                if (currentLayer != 0) {
+                    lastLayer = currentLayer;
+                    layer_clear();
+                    layer_on(0);
+                } else if (lastLayer != 0) {
+                    layer_on(lastLayer);
+                }
             }
             break;
     }

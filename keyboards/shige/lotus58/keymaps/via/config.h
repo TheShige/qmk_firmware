@@ -21,11 +21,11 @@
 #define SPLIT_TRANSACTION_IDS_USER USER_SYNC_A
 
 // Layer count
-#define LAYER_STATE_8BIT
-#define DYNAMIC_KEYMAP_LAYER_COUNT 8
+#define LAYER_STATE_16BIT
+#define DYNAMIC_KEYMAP_LAYER_COUNT 16
 
 // Homerow mod
-#define TAPPING_TERM 190
+#define TAPPING_TERM 180
 
 // RGB Matrix effects
 #define RGB_MATRIX_KEYPRESSES
