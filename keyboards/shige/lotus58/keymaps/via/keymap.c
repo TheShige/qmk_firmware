@@ -17,228 +17,154 @@
 //
 enum my_keycodes { SWITCH_COLEMAK = SAFE_RANGE };
 
-typedef struct _sync_luna_status_t {
+typedef struct _custom_sync_t {
     bool isJumping;
     bool showedJump;
     bool isSneaking;
-} sync_luna_status_t;
+    bool isSnapTapEnabled;
+} custom_sync_t;
 
 bool isSynced = true; // are the two halves are synced
 
 uint32_t anim_timer    = 0;
-uint8_t current_frame = 0;
+uint8_t  current_frame = 0;
 
 /* status variables */
-int current_wpm = 0;
-led_t led_usb_state;
-sync_luna_status_t luna_status;
+int           current_wpm = 0;
+led_t         led_usb_state;
+custom_sync_t custom_sync_status;
 
-int lastLayer = 0; // last layer before "SWITCH_COLEMAK" is pressed
-int currentLayer = 0; // current layer
+int  lastLayer       = 0; // last layer before "SWITCH_COLEMAK" is pressed
+int  currentLayer    = 0; // current layer
 bool is_oled_enabled = true;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-    [0] = LAYOUT(
-    KC_ESC, 	    KC_1,	        KC_2,	        KC_3,	        KC_4,	        KC_5,	        KC_MPLY,	KC_NO,	KC_6,	        KC_7,	        KC_8,		    KC_9,		    KC_0,		        KC_MINS,
-    KC_TAB, 	    KC_Q,	        KC_W,           KC_F,           KC_P,           KC_B,                               KC_J, 	        KC_L,           KC_U,   	    KC_Y,   	    KC_SCLN,   	        KC_EQL,
-	KC_CAPS,        LGUI_T(KC_A), 	LALT_T(KC_R),   LCTL_T(KC_S),   LSFT_T(KC_T),   KC_G,                      	    KC_M, 	        RSFT_T(KC_N),   RCTL_T(KC_E),   LALT_T(KC_I),	RGUI_T(KC_O),       KC_QUOT,
-	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_D,           KC_V,           TG(1),		TG(6),  KC_K, 	        KC_H,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
-						            LT(5, KC_LGUI), LT(4, KC_ESC),  LT(3,KC_SPC),   KC_TAB,    	                        KC_ENT, 	    LT(2,KC_BSPC),  KC_DEL,         KC_RALT
-	),
+    [0] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_MPLY, KC_NO, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_EQL, KC_CAPS, LGUI_T(KC_A), LALT_T(KC_R), LCTL_T(KC_S), LSFT_T(KC_T), KC_G, KC_M, RSFT_T(KC_N), RCTL_T(KC_E), LALT_T(KC_I), RGUI_T(KC_O), KC_QUOT, KC_LCTL, KC_Z, KC_X, KC_C, KC_D, KC_V, TG(1), TG(6), KC_K, KC_H, KC_COMMA, KC_DOT, KC_SLSH, KC_DEL, LT(5, KC_LGUI), LT(4, KC_ESC), LT(3, KC_SPC), KC_TAB, KC_ENT, LT(2, KC_BSPC), KC_DEL, KC_RALT),
 
-    [1] = LAYOUT(
-    KC_ESC, 	    KC_1,	        KC_2,	        KC_3,	        KC_4,	        KC_5,	        ____,	    ____,	KC_6,	        KC_7,	        KC_8,		    KC_9,		    KC_0,		        KC_MINS,
-    KC_TAB, 	    KC_Q,	        KC_W,           KC_E,           KC_R,           KC_T,                               KC_Y, 	        KC_U,           KC_I,   	    KC_O,   	    KC_P,   	        KC_EQL,
-    KC_CAPS,        LGUI_T(KC_A), 	LALT_T(KC_S),   LCTL_T(KC_D),   LSFT_T(KC_F),     KC_G,                      	    KC_H, 	        RSFT_T(KC_J),   RCTL_T(KC_K),   LALT_T(KC_L),	RGUI_T(KC_SCLN),    KC_QUOT,
-	KC_LCTL, 	    KC_Z, 	        KC_X,           KC_C,           KC_V,           KC_B,           TG(1),		TG(6),  KC_N, 	        KC_M,           KC_COMMA,	    KC_DOT, 	    KC_SLSH, 	        KC_DEL,
-						            LT(5, KC_LGUI), LT(4, KC_ESC),  LT(3,KC_SPC),   KC_TAB,    	                        KC_ENT, 	    LT(2,KC_BSPC),  KC_DEL,         KC_RALT
-	),
+    [1] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, ____, ____, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_EQL, KC_CAPS, LGUI_T(KC_A), LALT_T(KC_S), LCTL_T(KC_D), LSFT_T(KC_F), KC_G, KC_H, RSFT_T(KC_J), RCTL_T(KC_K), LALT_T(KC_L), RGUI_T(KC_SCLN), KC_QUOT, KC_LCTL, KC_Z, KC_X, KC_C, KC_V, KC_B, TG(1), TG(6), KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, KC_DEL, LT(5, KC_LGUI), LT(4, KC_ESC), LT(3, KC_SPC), KC_TAB, KC_ENT, LT(2, KC_BSPC), KC_DEL, KC_RALT),
 
-    [2] = LAYOUT(
-    ____,     KC_GRAVE,       LSFT(KC_9),     LSFT(KC_0),     KC_SCLN,        KC_COMMA,       ____,       ____,   ____,   ____,   ____,   ____,   ____,   ____,
-	LSFT(KC_1),     LSFT(KC_LBRC),  KC_QUOT,        LSFT(KC_QUOT),  LSFT(KC_RBRC),  LSFT(KC_SLSH),                      ____,   ____,   ____,   ____,   ____,   ____,
-	LSFT(KC_3),     LSFT(KC_6),     KC_EQL,         LSFT(KC_MINS),  LSFT(KC_4),     LSFT(KC_8),                         ____,   ____,   ____,   ____,   ____,   ____,
-	LSFT(KC_GRV),   LSFT(KC_COMMA), LSFT(KC_BSLS),  KC_MINS,        LSFT(KC_DOT),   KC_SLSH,        ____,    ____,   ____,   ____,   ____,   ____,   ____,   ____,
-	                                LSFT(KC_5),     KC_DOT,         LSFT(KC_SCLN),  KC_SCLN,                            ____,   ____,   ____,   ____
-    ),
+    [2] = LAYOUT(____, KC_GRAVE, LSFT(KC_9), LSFT(KC_0), KC_SCLN, KC_COMMA, ____, ____, ____, ____, ____, ____, ____, ____, LSFT(KC_1), LSFT(KC_LBRC), KC_QUOT, LSFT(KC_QUOT), LSFT(KC_RBRC), LSFT(KC_SLSH), ____, ____, ____, ____, ____, ____, LSFT(KC_3), LSFT(KC_6), KC_EQL, LSFT(KC_MINS), LSFT(KC_4), LSFT(KC_8), ____, ____, ____, ____, ____, ____, LSFT(KC_GRV), LSFT(KC_COMMA), LSFT(KC_BSLS), KC_MINS, LSFT(KC_DOT), KC_SLSH, ____, ____, ____, ____, ____, ____, ____, ____, LSFT(KC_5), KC_DOT, LSFT(KC_SCLN), KC_SCLN, ____, ____, ____, ____),
 
-    [3] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, KC_HOME, KC_PGDN, KC_PGUP, KC_END, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [3] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, KC_HOME, KC_PGDN, KC_PGUP, KC_END, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [4] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    LSFT(KC_8), KC_7, KC_8, KC_9, LSFT(KC_SCLN), ____,
-	____, ____, ____, ____, ____, ____,                    LSFT(KC_EQL), KC_4, KC_5, KC_6, KC_MINS, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, LSFT(KC_8), KC_1, KC_2, KC_3, KC_SLSH, ____,
-					  ____, ____, ____, ____,      	 KC_DOT, KC_0, KC_COMMA, KC_EQL
-    ),
+    [4] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, LSFT(KC_8), KC_7, KC_8, KC_9, LSFT(KC_SCLN), ____, ____, ____, ____, ____, ____, ____, LSFT(KC_EQL), KC_4, KC_5, KC_6, KC_MINS, ____, ____, ____, ____, ____, ____, ____, ____, ____, LSFT(KC_8), KC_1, KC_2, KC_3, KC_SLSH, ____, ____, ____, ____, ____, KC_DOT, KC_0, KC_COMMA, KC_EQL),
 
-    [5] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, RGB_MODE_FORWARD, RGB_MODE_REVERSE, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, RGB_SPI, RGB_VAI, RGB_VAD, RGB_SPD, RGB_TOG,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, RGB_HUI, RGB_SAI, RGB_SAD, RGB_HUD, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [5] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, RGB_MODE_FORWARD, RGB_MODE_REVERSE, ____, ____, ____, ____, ____, ____, ____, ____, ____, RGB_SPI, RGB_VAI, RGB_VAD, RGB_SPD, RGB_TOG, ____, ____, ____, ____, ____, ____, ____, ____, ____, RGB_HUI, RGB_SAI, RGB_SAD, RGB_HUD, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [6] = LAYOUT(
-    KC_ESC, KC_1,    KC_2, KC_3, KC_4, KC_5,       ____,       ____,   KC_6, KC_7, KC_8, KC_9, KC_0, ____,
-	KC_DEL, KC_TAB,  KC_Q, KC_W, KC_E, KC_R,                         KC_Y, KC_U, KC_I, KC_O, KC_P, ____,
-	KC_T,   KC_LSFT, KC_A, KC_S, KC_D, KC_F,                          KC_H, KC_J, KC_K, KC_L, KC_SCLN, ____,
-	KC_B,   KC_LCTL, KC_Z, KC_X, KC_C, KC_V,      KC_G,        TG(6), KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, ____,
-				     KC_B, KC_LALT, KC_SPC, KC_LCTL,      	    KC_ENT, ____, ____, ____
-    ),
+    [6] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, ____, ____, KC_6, KC_7, KC_8, KC_9, KC_0, ____, KC_DEL, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_Y, KC_U, KC_I, KC_O, KC_P, ____, KC_T, KC_LSFT, KC_A, KC_S, KC_D, KC_F, KC_H, KC_J, KC_K, KC_L, KC_SCLN, ____, KC_B, KC_LCTL, KC_Z, KC_X, KC_C, KC_V, KC_G, TG(6), KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, ____, KC_B, KC_LALT, KC_SPC, KC_LCTL, KC_ENT, ____, ____, ____),
 
-    [7] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [7] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [8] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [8] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [9] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [9] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [10] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [10] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [11] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [11] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [12] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [12] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [13] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [13] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [14] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [14] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 
-    [15] = LAYOUT(
-    ____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____,                    ____, ____, ____, ____, ____, ____,
-	____, ____, ____, ____, ____, ____, ____,        ____, ____, ____, ____, ____, ____, ____,
-					  ____, ____, ____, ____,      	 ____, ____, ____, ____
-    ),
+    [15] = LAYOUT(____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____, ____),
 };
 
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
-    [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [1] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [2] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [3] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [4] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [5] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [6] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [7] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [8] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [9] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [10] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [11] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [12] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [13] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [14] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [15] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [0] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_VOLD, KC_VOLU)}, [1] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [2] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},  [3] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},  [4] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},  [5] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},  [6] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},  [7] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},
+    [8] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [9] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [10] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [11] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [12] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [13] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [14] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)}, [15] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},
 };
 
 // RGB matrix
-led_config_t g_led_config = {
-    {
-    // Key Matrix to LED Index
-    // Left Half
-    {  5,  4,  3,  2,  1,  0 },
-    {  6,  7,  8,  9, 10, 11 },
-    { 17, 16, 15, 14, 13, 12 },
-    { 18, 19, 20, 21, 22, 23 },
-    { NO_LED, 28, 27, 26, 25, 24 },
-    // Right Half
-    { 34, 33, 32, 31, 30, 29 },
-    { 35, 36, 37, 38, 39, 40 },
-    { 46, 45, 44, 43, 42, 41 },
-    { 47, 48, 49, 50, 51, 52 },
-    { NO_LED, 57, 56, 55, 54, 53 }
-    },
-    {
-    // LED Index to Physical Position
-    // Left Half
-    { 80, 4  }, { 64, 2  }, { 48, 0  }, { 32, 2  }, { 16, 5  }, {  0, 7  },
-    {  0, 23 }, { 16, 21 }, { 32, 18 }, { 48, 16 }, { 64, 18 }, { 80, 20 },
-    { 80, 36 }, { 64, 34 }, { 48, 32 }, { 32, 34 }, { 16, 37 }, {  0, 38 },
-    {  0, 55 }, { 16, 53 }, { 32, 50 }, { 48, 48 }, { 64, 50 }, { 80, 52 },
-                                                                        { 100, 44 },
-                                { 92, 61 },  { 72, 64 }, { 56, 62 }, { 40, 60 },
+led_config_t g_led_config = {{// Key Matrix to LED Index
+                              // Left Half
+                              {5, 4, 3, 2, 1, 0},
+                              {6, 7, 8, 9, 10, 11},
+                              {17, 16, 15, 14, 13, 12},
+                              {18, 19, 20, 21, 22, 23},
+                              {NO_LED, 28, 27, 26, 25, 24},
+                              // Right Half
+                              {34, 33, 32, 31, 30, 29},
+                              {35, 36, 37, 38, 39, 40},
+                              {46, 45, 44, 43, 42, 41},
+                              {47, 48, 49, 50, 51, 52},
+                              {NO_LED, 57, 56, 55, 54, 53}},
+                             {
+                                 // LED Index to Physical Position
+                                 // Left Half
+                                 {80, 4},
+                                 {64, 2},
+                                 {48, 0},
+                                 {32, 2},
+                                 {16, 5},
+                                 {0, 7},
+                                 {0, 23},
+                                 {16, 21},
+                                 {32, 18},
+                                 {48, 16},
+                                 {64, 18},
+                                 {80, 20},
+                                 {80, 36},
+                                 {64, 34},
+                                 {48, 32},
+                                 {32, 34},
+                                 {16, 37},
+                                 {0, 38},
+                                 {0, 55},
+                                 {16, 53},
+                                 {32, 50},
+                                 {48, 48},
+                                 {64, 50},
+                                 {80, 52},
+                                 {100, 44},
+                                 {92, 61},
+                                 {72, 64},
+                                 {56, 62},
+                                 {40, 60},
 
-    // Right Half
-            { 144, 4  }, { 160, 2  }, { 176, 0  }, { 192, 2  }, { 208, 5  }, { 224, 7  },
-            { 224, 23 }, { 208, 21 }, { 192, 18 }, { 176, 16 }, { 160, 18 }, { 144, 20 },
-            { 144, 36 }, { 160, 34 }, { 176, 32 }, { 192, 34 }, { 208, 37 }, { 224, 38 },
-            { 224, 55 }, { 208, 53 }, { 192, 50 }, { 176, 48 }, { 160, 50 }, { 144, 52 },
-    { 124, 44 },
-        { 132, 61 }, { 152, 64 }, { 168, 62 }, { 184, 60 },
+                                 // Right Half
+                                 {144, 4},
+                                 {160, 2},
+                                 {176, 0},
+                                 {192, 2},
+                                 {208, 5},
+                                 {224, 7},
+                                 {224, 23},
+                                 {208, 21},
+                                 {192, 18},
+                                 {176, 16},
+                                 {160, 18},
+                                 {144, 20},
+                                 {144, 36},
+                                 {160, 34},
+                                 {176, 32},
+                                 {192, 34},
+                                 {208, 37},
+                                 {224, 38},
+                                 {224, 55},
+                                 {208, 53},
+                                 {192, 50},
+                                 {176, 48},
+                                 {160, 50},
+                                 {144, 52},
+                                 {124, 44},
+                                 {132, 61},
+                                 {152, 64},
+                                 {168, 62},
+                                 {184, 60},
 
-    },
-    {
-    // LED Index to Flag
-    4, 4, 4, 4, 4, 4,
-    4, 4, 4, 4, 4, 4,
-    4, 4, 4, 4, 4, 4,
-    4, 4, 4, 4, 4, 4,   4,
-            4, 4, 4, 4,
+                             },
+                             {// LED Index to Flag
+                              4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                              4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 
-        4, 4, 4, 4, 4, 4,
-        4, 4, 4, 4, 4, 4,
-        4, 4, 4, 4, 4, 4,
-    4,  4, 4, 4, 4, 4, 4,
-       4, 4, 4, 4
+                              4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                              4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
 
-    }
-};
+                             }};
 
 // Key overrides setup
 const key_override_t key1 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_6), KC_LBRC, 4);
@@ -248,15 +174,7 @@ const key_override_t key4 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_4), KC_R
 const key_override_t key5 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_8), KC_BSLS, 4);
 const key_override_t key6 = ko_make_with_layers(MOD_MASK_SHIFT, LSFT(KC_3), LSFT(KC_2), 4);
 
-const key_override_t **key_overrides = (const key_override_t *[]){
-    &key1,
-    &key2,
-    &key3,
-    &key4,
-    &key5,
-    &key6,
-    NULL
-};
+const key_override_t *key_overrides[] = (const key_override_t *[]){&key1, &key2, &key3, &key4, &key5, &key6, NULL};
 
 // Achordion setup
 uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
@@ -271,10 +189,7 @@ uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
     return 800;
 }
 
-bool achordion_chord(uint16_t tap_hold_keycode,
-                     keyrecord_t *tap_hold_record,
-                     uint16_t other_keycode,
-                     keyrecord_t *other_record) {
+bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
     switch (tap_hold_keycode) {
         case LALT_T(KC_R):
         case LALT_T(KC_S):
@@ -285,6 +200,15 @@ bool achordion_chord(uint16_t tap_hold_keycode,
     return achordion_opposite_hands(tap_hold_record, other_record);
 }
 
+// Key cancellation setup
+const key_interrupt_t PROGMEM key_interrupt_list[] = {
+    [0] = {KC_D, KC_A},
+    [1] = {KC_A, KC_D},
+    [2] = {KC_W, KC_S},
+    [3] = {KC_S, KC_W},
+};
+
+// Doggy animation setup
 static void render_luna(int LUNA_X, int LUNA_Y) {
     /* Sit */
     static const char PROGMEM sit[2][ANIM_SIZE] = {/* 'sit1', 32x22px */
@@ -342,14 +266,14 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
     /* animation */
     void animate_luna(void) {
         /* jump */
-        if (luna_status.isJumping || !luna_status.showedJump) {
+        if (custom_sync_status.isJumping || !custom_sync_status.showedJump) {
             /* clear */
             oled_set_cursor(LUNA_X, LUNA_Y + 2);
             oled_write("     ", false);
 
             oled_set_cursor(LUNA_X, LUNA_Y - 1);
 
-            luna_status.showedJump = true;
+            custom_sync_status.showedJump = true;
         } else {
             /* clear */
             oled_set_cursor(LUNA_X, LUNA_Y - 1);
@@ -364,7 +288,7 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
         /* current status */
         if (led_usb_state.caps_lock) {
             oled_write_raw_P(bark[current_frame], ANIM_SIZE);
-        } else if (luna_status.isSneaking) {
+        } else if (custom_sync_status.isSneaking) {
             oled_write_raw_P(sneak[current_frame], ANIM_SIZE);
         } else if (current_wpm <= MIN_WALK_SPEED) {
             oled_write_raw_P(sit[current_frame], ANIM_SIZE);
@@ -393,73 +317,75 @@ static void print_status_narrow(void) {
     oled_write_P(PSTR("Layer"), false);
     switch (currentLayer) {
         case 0:
-            oled_write_P(PSTR("-Clmk\n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-Clmk"), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 1:
-            oled_write_P(PSTR("-Qwer\n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-Qwer"), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 2:
-            oled_write_P(PSTR("-Symb\n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-Symb"), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 3:
-            oled_write_P(PSTR("-Nav \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-Nav "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 4:
-            oled_write_P(PSTR("-Num \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-Num "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 5:
-            oled_write_P(PSTR("-RGB \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-RGB "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 6:
-            oled_write_P(PSTR("-Game\n"), false);
-            oled_write_P(PSTR("*****\n"), false);
+            oled_write_P(PSTR("-Game"), false);
+            oled_write_P(PSTR("*****"), false);
             break;
         case 7:
-            oled_write_P(PSTR("-Game\n"), false);
-            oled_write_P(PSTR("*Base\n"), false);
+            oled_write_P(PSTR("-Game"), false);
+            oled_write_P(PSTR("*Base"), false);
             break;
         case 8:
-            oled_write_P(PSTR("-Game\n"), false);
-            oled_write_P(PSTR("*VALO\n"), false);
+            oled_write_P(PSTR("-Game"), false);
+            oled_write_P(PSTR("*VALO"), false);
             break;
         case 9:
-            oled_write_P(PSTR("-Game\n"), false);
-            oled_write_P(PSTR("*EFT \n"), false);
+            oled_write_P(PSTR("-Game"), false);
+            oled_write_P(PSTR("*EFT "), false);
             break;
         case 10:
-            oled_write_P(PSTR("-Game\n"), false);
-            oled_write_P(PSTR("*Cust \n"), false);
+            oled_write_P(PSTR("-Game"), false);
+            oled_write_P(PSTR("*Cust "), false);
             break;
         case 11:
-            oled_write_P(PSTR("-11   \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-11  "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 12:
-            oled_write_P(PSTR("-12   \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-12  "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 13:
-            oled_write_P(PSTR("-13  \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-13  "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 14:
-            oled_write_P(PSTR("-14  \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-14  "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case 15:
-            oled_write_P(PSTR("-15  \n"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("-15  "), false);
+            oled_write_P(PSTR("     "), false);
             break;
         default:
             oled_write_P(PSTR("Undef"), false);
-            oled_write_P(PSTR("     \n"), false);
+            oled_write_P(PSTR("     "), false);
     }
+
+    oled_write_P(PSTR("\nSTap "), custom_sync_status.isSnapTapEnabled);
 
     /* wpm counter */
     uint8_t n = current_wpm;
@@ -486,7 +412,7 @@ oled_rotation_t oled_init_kb(oled_rotation_t rotation) {
 }
 
 bool oled_task_user(void) {
-    current_wpm = get_current_wpm();
+    current_wpm   = get_current_wpm();
     led_usb_state = host_keyboard_led_state();
 
     if (!is_keyboard_master()) {
@@ -504,17 +430,21 @@ bool oled_task_user(void) {
 }
 
 void user_sync_a_slave_handler(uint8_t in_buflen, const void *in_data, uint8_t out_buflen, void *out_data) {
-    const sync_luna_status_t *m2s = (const sync_luna_status_t *)in_data;
+    const custom_sync_t *m2s = (const custom_sync_t *)in_data;
 
-    luna_status.isJumping = m2s->isJumping;
-    luna_status.showedJump = m2s->showedJump;
-    luna_status.isSneaking = m2s->isSneaking;
+    custom_sync_status.isJumping        = m2s->isJumping;
+    custom_sync_status.showedJump       = m2s->showedJump;
+    custom_sync_status.isSneaking       = m2s->isSneaking;
+    custom_sync_status.isSnapTapEnabled = m2s->isSnapTapEnabled;
 }
 
 void keyboard_post_init_user(void) {
-    luna_status.isJumping = false;
-    luna_status.showedJump = true;
-    luna_status.isSneaking = false;
+    key_interrupt_recovery_enable();
+
+    custom_sync_status.isJumping        = false;
+    custom_sync_status.showedJump       = true;
+    custom_sync_status.isSneaking       = false;
+    custom_sync_status.isSnapTapEnabled = key_interrupt_is_enabled();
 
     transaction_register_rpc(USER_SYNC_A, user_sync_a_slave_handler);
 }
@@ -523,12 +453,12 @@ void housekeeping_task_user(void) {
     currentLayer = get_highest_layer(layer_state);
     if (is_keyboard_master()) {
         if (!isSynced) {
-            if (transaction_rpc_send(USER_SYNC_A, sizeof(luna_status), &luna_status)) {
+            if (transaction_rpc_send(USER_SYNC_A, sizeof(custom_sync_status), &custom_sync_status)) {
                 isSynced = true;
 
-                luna_status.isJumping = false;
-                luna_status.showedJump = true;
-                luna_status.isSneaking = false;
+                custom_sync_status.isJumping  = false;
+                custom_sync_status.showedJump = true;
+                custom_sync_status.isSneaking = false;
             }
         }
     } else {
@@ -542,22 +472,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_LCTL:
         case KC_RCTL:
             if (record->event.pressed) {
-                luna_status.isSneaking = true;
-                isSynced = false;
+                custom_sync_status.isSneaking = true;
+                isSynced                      = false;
             } else {
-                luna_status.isSneaking = false;
-                isSynced = false;
+                custom_sync_status.isSneaking = false;
+                isSynced                      = false;
             }
             break;
         case LT(3, KC_SPC):
         case KC_SPC:
             if (record->event.pressed) {
-                luna_status.isJumping  = true;
-                luna_status.showedJump = false;
-                isSynced = false;
+                custom_sync_status.isJumping  = true;
+                custom_sync_status.showedJump = false;
+                isSynced                      = false;
             } else {
-                luna_status.isJumping = false;
-                isSynced = false;
+                custom_sync_status.isJumping = false;
+                isSynced                     = false;
             }
             break;
         case SWITCH_COLEMAK:
@@ -569,6 +499,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 } else if (lastLayer != 0) {
                     layer_on(lastLayer);
                 }
+            }
+            break;
+        case KI_TOGG:
+            if (record->event.pressed) {
+                custom_sync_status.isSnapTapEnabled = !custom_sync_status.isSnapTapEnabled;
+                isSynced                            = false;
             }
             break;
     }

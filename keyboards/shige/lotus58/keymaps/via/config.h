@@ -27,6 +27,9 @@
 // Homerow mod
 #define TAPPING_TERM 180
 
+// Debouncing time
+#define DEBOUNCE 6
+
 // RGB Matrix effects
 #define RGB_MATRIX_KEYPRESSES
 

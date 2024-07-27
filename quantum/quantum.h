@@ -240,8 +240,8 @@ extern layer_state_t layer_state;
 #    include "os_detection.h"
 #endif
 
-#ifdef KEY_CANCELLATION_ENABLE
-#    include "process_key_cancellation.h"
+#ifdef KEY_INTERRUPT_ENABLE
+#    include "process_key_interrupt.h"
 #endif
 
 void set_single_persistent_default_layer(uint8_t default_layer);

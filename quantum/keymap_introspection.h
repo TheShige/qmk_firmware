@@ -111,18 +111,16 @@ const key_override_t* key_override_get(uint16_t key_override_idx);
 #endif // defined(KEY_OVERRIDE_ENABLE)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Key Cancellation
+// Key Interrupt
 
-#if defined(KEY_CANCELLATION_ENABLE)
-// Forward declaration of key_cancellation_t so we don't need to deal with header reordering
-struct key_cancellation_t;
-typedef struct key_cancellation_t key_cancellation_t;
-// Get the number of key cancellations defined in the user's keymap, stored in firmware rather than any other persistent storage
-uint16_t key_cancellation_count_raw(void);
-// Get the number of key cancellations defined in the user's keymap, potentially stored dynamically
-uint16_t key_cancellation_count(void);
-// Get the keycodes for the key cancellation, stored in firmware rather than any other persistent storage
-key_cancellation_t key_cancellation_get_raw(uint16_t idx);
-// Get the keycodes for the key cancellation, stored in firmware, potentially stored dynamically
-key_cancellation_t key_cancellation_get(uint16_t idx);
-#endif // defined(KEY_CANCELLATION_ENABLE)
+#if defined(KEY_INTERRUPT_ENABLE)
+#    include "process_key_interrupt.h"
+// Get the number of key interrupts defined in the user's keymap, stored in firmware rather than any other persistent storage
+uint16_t key_interrupt_count_raw(void);
+// Get the number of key interrupts defined in the user's keymap, potentially stored dynamically
+uint16_t key_interrupt_count(void);
+// Get the keycodes for the key interrupt, stored in firmware rather than any other persistent storage
+key_interrupt_t key_interrupt_get_raw(uint16_t idx);
+// Get the keycodes for the key interrupt, stored in firmware, potentially stored dynamically
+key_interrupt_t key_interrupt_get(uint16_t idx);
+#endif // defined(KEY_INTERRUPT_ENABLE)

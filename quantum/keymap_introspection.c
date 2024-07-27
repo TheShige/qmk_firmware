@@ -167,23 +167,24 @@ __attribute__((weak)) const key_override_t* key_override_get(uint16_t key_overri
 #endif // defined(KEY_OVERRIDE_ENABLE)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Key Cancellation
+// Key Interrupt
 
-#if defined(KEY_CANCELLATION_ENABLE)
-uint16_t key_cancellation_count_raw(void) {
-    return sizeof(key_cancellation_list) / sizeof(key_cancellation_t);
+#if defined(KEY_INTERRUPT_ENABLE)
+uint16_t key_interrupt_count_raw(void) {
+    return sizeof(key_interrupt_list) / sizeof(key_interrupt_t);
 }
-__attribute__((weak)) uint16_t key_cancellation_count(void) {
-    return key_cancellation_count_raw();
+__attribute__((weak)) uint16_t key_interrupt_count(void) {
+    return key_interrupt_count_raw();
 }
 
-key_cancellation_t key_cancellation_get_raw(uint16_t idx) {
-    key_cancellation_t ret;
-    memcpy_P(&ret, &key_cancellation_list[idx], sizeof(key_cancellation_t));
+key_interrupt_t key_interrupt_get_raw(uint16_t idx) {
+    key_interrupt_t ret;
+    memcpy_P(&ret, &key_interrupt_list[idx], sizeof(key_interrupt_t));
     return ret;
 }
 
-__attribute__((weak)) key_cancellation_t key_cancellation_get(uint16_t idx) {
-    return key_cancellation_get_raw(idx);
+__attribute__((weak)) key_interrupt_t key_interrupt_get(uint16_t idx) {
+    return key_interrupt_get_raw(idx);
 }
-#endif // defined(KEY_CANCELLATION_ENABLE)
+
+#endif // defined(KEY_INTERRUPT_ENABLE)

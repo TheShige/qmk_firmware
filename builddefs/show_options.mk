@@ -84,7 +84,7 @@ OTHER_OPTION_NAMES = \
   AUTOCORRECT_ENABLE \
   TRI_LAYER_ENABLE \
   REPEAT_KEY_ENABLE \
-  KEY_CANCELLATION_ENABLE
+  KEY_INTERRUPT_ENABLE
 
 define NAME_ECHO
        @printf "  %-30s = %-16s # %s\\n" "$1" "$($1)" "$(origin $1)"
